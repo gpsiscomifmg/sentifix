@@ -119,7 +119,7 @@ def update_news(link_list):
             save_news(news)
             time.sleep(5)
 
-def main():
+def update():
     '''
     Main function
     '''
@@ -128,4 +128,4 @@ def main():
     update_news(link_list)
 
 if __name__ == '__main__':
-    main()
+    update()
