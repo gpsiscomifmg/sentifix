@@ -11,11 +11,13 @@ import pandas as pd
 from leia import SentimentIntensityAnalyzer
 from files import DATE, TITLE, CONTENT, COMMENTS, get_news
 
+nltk.download('punkt')
+
 ANALYZER = SentimentIntensityAnalyzer()
 
 def summarize_sentiment(text):
     '''summarize sentiment from text'''
-    content_list = nltk.sent_tokenize(text)
+    content_list = nltk.sent_tokenize(text, language='portuguese')
     sent_list = [ANALYZER.polarity_scores(sentence) for sentence in content_list]
     sentiment = {
         'neg': np.mean([item['neg'] for item in sent_list]),
