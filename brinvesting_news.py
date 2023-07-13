@@ -7,28 +7,14 @@ BrInvesting IFIX News
 
 import time
 import random
-import os
-import json
 import requests
 from bs4 import BeautifulSoup
-
-# News attributes
-AUTHOR = 'author'
-AUTHOR_LINK = 'author_link'
-CATEGORY = 'category'
-DATE = 'date'
-TIME = 'time'
-TITLE = 'title'
-CONTENT = 'content'
-COMMENTS = 'comments'
+from files import (AUTHOR, AUTHOR_LINK, CATEGORY, DATE, TIME, TITLE, CONTENT, COMMENTS,
+                   get_links, save_links, get_news, save_news)
 
 # URLs
 URL_BASE = 'https://br.investing.com'
 URL_IFIX = URL_BASE + '/indices/bm-fbovespa-real-estate-ifix-news/'
-
-# Files
-LINKS_FILE = 'links.txt'
-NEWS_FILE = 'news.json'
 
 def get_source(url):
     '''
@@ -65,12 +51,7 @@ def update_links():
     '''
     Update new links
     '''
-    link_list = []
-    # Check if link file exists
-    if os.path.isfile(LINKS_FILE):
-        # Load existing links
-        with open(LINKS_FILE, 'r', encoding='utf-8') as file:
-            link_list = file.read().split('\n')[:-1]
+    link_list = get_links()
     print('Getting links...')
     # Start page
     page_number = 1
@@ -86,9 +67,7 @@ def update_links():
         # Go to next page
         page_number += 1
     # Save links to file
-    with open(LINKS_FILE, 'w', encoding='utf-8') as file:
-        for link in link_list:
-            file.write(link + '\n')
+    save_links(link_list)
     return link_list
 
 def get_new(link):
@@ -129,11 +108,7 @@ def update_news(link_list):
     '''
     Update news from link list
     '''
-    news = {}
-    # Open news file
-    if os.path.isfile(NEWS_FILE):
-        with open(NEWS_FILE, 'r', encoding='utf-8') as file:
-            news = json.load(file)
+    news = get_news()
     # For each link
     for link in link_list:
         link = link.strip()
@@ -141,9 +116,7 @@ def update_news(link_list):
         if link not in news:
             print('Getting new: ' + link)
             news[link] = get_new(link)
-            # Save news to file
-            with open(NEWS_FILE, 'w', encoding='utf-8') as file:
-                json.dump(news, file, indent=2, ensure_ascii=False)
+            save_news(news)
             time.sleep(5)
 
 def main():
