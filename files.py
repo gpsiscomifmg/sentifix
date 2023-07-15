@@ -6,6 +6,7 @@ File utils
 
 import os
 import json
+import pandas as pd
 
 # News attributes
 AUTHOR = 'author'
@@ -16,10 +17,13 @@ TIME = 'time'
 TITLE = 'title'
 CONTENT = 'content'
 COMMENTS = 'comments'
+IFIX = 'ifix'
 
 # Files
 LINKS_FILE = 'links.txt'
 NEWS_FILE = 'news.json'
+IFIX_FILE = 'ifix.csv'
+SENTIMENT_FILE = 'sentiment.csv'
 
 def get_links():
     '''Get links from file'''
@@ -51,3 +55,16 @@ def save_news(news):
     '''Save news to file'''
     with open(NEWS_FILE, 'w', encoding='utf-8') as file:
         json.dump(news, file, indent=2, ensure_ascii=False)
+
+def get_ifix():
+    '''Get IFIX history from file'''
+    data = None
+    if os.path.isfile(IFIX_FILE):
+        data = pd.read_csv('ifix.csv', index_col=DATE, parse_dates=True)
+    return data
+
+def to_float(text):
+    '''Convert text to float'''
+    text = text.replace('.', '')
+    text = text.replace(',', '.')
+    return float(text)

@@ -2,43 +2,21 @@
 # -*- coding: utf-8 -*-
 
 '''
-News vader sentiment (leia implementation)
+News sentiment from leia (VADER)
 '''
 
-# TODO: mais de uma notícia na mesma data?
-# TODO: Verificar última data antes de calcular sentimentos
-
-import nltk
-import numpy as np
 import pandas as pd
 from leia import SentimentIntensityAnalyzer
-from files import DATE, TITLE, CONTENT, COMMENTS, get_news
-
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
+from files import DATE, TITLE, CONTENT, COMMENTS, SENTIMENT_FILE, get_news
 
 ANALYZER = SentimentIntensityAnalyzer()
-
-def summarize_sentiment(text):
-    '''summarize sentiment from text'''
-    content_list = nltk.sent_tokenize(text, language='portuguese')
-    sent_list = [ANALYZER.polarity_scores(sentence) for sentence in content_list]
-    sentiment = {
-        'neg': np.mean([item['neg'] for item in sent_list]),
-        'neu': np.mean([item['neu'] for item in sent_list]),
-        'pos': np.mean([item['pos'] for item in sent_list]),
-        'compound': np.mean([item['compound'] for item in sent_list])
-        }
-    return sentiment
 
 def get_sentiment(new):
     '''get sentiments from new'''
     sent_dict = {DATE: new[DATE]}
     title_sentiment = ANALYZER.polarity_scores(new[TITLE])
-    content_sentiment = summarize_sentiment(new[CONTENT])
-    comments_sentiment = summarize_sentiment(new[COMMENTS])
+    content_sentiment = ANALYZER.polarity_scores(new[CONTENT])
+    comments_sentiment = ANALYZER.polarity_scores(new[COMMENTS])
     for sent, value in title_sentiment.items():
         sent_dict['title_' + sent] = value
     content_sentiment = ANALYZER.polarity_scores(new[CONTENT])
@@ -64,7 +42,7 @@ def main():
     data.set_index(DATE, inplace=True)
     data = data.resample('D').mean()
     data.interpolate(method='time', inplace=True)
-    data.to_csv('leia_sentiment.csv')
+    data.to_csv(SENTIMENT_FILE)
 
 if __name__ == '__main__':
     main()
