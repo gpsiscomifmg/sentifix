@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 
 '''
-News vader sentiment
+News vader sentiment (leia implementation)
 '''
+
+# TODO: mais de uma notícia na mesma data?
+# TODO: Verificar última data antes de calcular sentimentos
 
 import nltk
 import numpy as np
@@ -11,7 +14,10 @@ import pandas as pd
 from leia import SentimentIntensityAnalyzer
 from files import DATE, TITLE, CONTENT, COMMENTS, get_news
 
-nltk.download('punkt')
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
 
 ANALYZER = SentimentIntensityAnalyzer()
 
@@ -58,7 +64,7 @@ def main():
     data.set_index(DATE, inplace=True)
     data = data.resample('D').mean()
     data.interpolate(method='time', inplace=True)
-    data.to_csv('vader_sentiment.csv')
+    data.to_csv('leia_sentiment.csv')
 
 if __name__ == '__main__':
     main()
