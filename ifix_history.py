@@ -18,10 +18,12 @@ def get_history(year):
     '''
     Get IFIX history for year
     '''
+    # Get API data
     params = '{"index":"IFIX","language":"pt-br","year":"' + str(year) + '"}'
     params = b64encode(params.encode())
     url = URL_BASE + str(params.decode())
     input_list = requests.get(url, timeout=10).json()
+    # Carry out data (lines of days and columns of months)
     input_list = input_list['results']
     history_list = []
     for day_dict in input_list:
@@ -37,7 +39,10 @@ def get_history(year):
     return history_list
 
 def update():
-    '''Update IFIX data'''
+    '''
+    Update IFIX data
+    '''
+    # Get current IFIX data
     ifix_data = get_ifix()
     if ifix_data is None:
         start_year = FIRST_IFIX_YEAR
@@ -47,12 +52,15 @@ def update():
         ifix_data = ifix_data[ifix_data.index.year < start_year]
     current_year = datetime.now().year
     hist_list = []
+    # Get history for each year
     for year in range(start_year, current_year+1):
         print('Getting IFIX history for year', year)
         hist_list += get_history(year)
+    # Build new data frame
     new_data = pd.DataFrame(hist_list)
     new_data.set_index(DATE, inplace=True)
     new_data.index = pd.to_datetime(new_data.index)
+    # Update current data
     ifix_data = ifix_data.append(new_data)
     ifix_data.sort_index(inplace=True)
     ifix_data = ifix_data.resample('D').mean()

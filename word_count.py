@@ -5,36 +5,58 @@
 News word count
 '''
 
+import nltk
 import matplotlib.pyplot as plt
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from string import punctuation
 from wordcloud import WordCloud
-# ntlk.download('stopwords')
-# nltk.download('punkt')
-
 from files import TITLE, CONTENT, COMMENTS, get_news
 
-news = get_news()
+try:
+    nltk.data.find('tokenizers/punkt')
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('punkt')
+    nltk.download('stopwords')
 
-text = ''
+def word_cloud(words, stops):
+    '''
+    Generate word cloud
+    '''
+    # Create cloud
+    cloud = WordCloud(stopwords=stops, max_words=300,
+                      width=1600, height=800).generate(' '.join(words)) 
+    # Plot cloud
+    plt.figure(figsize=(15, 10), facecolor='k')
+    plt.imshow(cloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.tight_layout(pad=0)
+    plt.show()
 
-for new in news.values():
-    text += new[TITLE] + '\n' + new[CONTENT] + '\n' + new[COMMENTS]
+def freq_graph(words):
+    '''
+    Generate frequency graph
+    '''
+    freq = nltk.FreqDist(words)
+    freq.plot(50)
 
-words = word_tokenize(text.lower())
-stops = stopwords.words('portuguese')
-stops.extend(list(punctuation))
-stops.extend(['fundo', 'r', 'fundos', 'sa', 'ifix', 'fii'])
-words = list(filter(lambda word: word not in stops, words))
+def main():
+    '''
+    Main function
+    '''
+    news = get_news()
+    text = ''
+    for new in news.values():
+        text += new[TITLE] + '\n' + new[CONTENT] + '\n' + new[COMMENTS]
+    # Tokenize words
+    words = word_tokenize(text.lower())
+    # Remove stopwords and punctuation
+    stops = stopwords.words('portuguese')
+    stops.extend(list(punctuation))
+    words = list(filter(lambda word: word not in stops, words))
+    word_cloud(words, stops)
+    freq_graph(words)
 
-cloud = WordCloud(stopwords=stops, max_words=300, width=1600, height=800).generate(' '.join(words)) 
-
-plt.figure(figsize=(15, 10), facecolor='k')
-plt.imshow(cloud, interpolation='bilinear')
-plt.axis('off')
-plt.tight_layout(pad=0)
-plt.show()
-
-freq = nltk.FreqDist(words)
-freq.plot(50)
+if __name__ == '__main__':
+    main()

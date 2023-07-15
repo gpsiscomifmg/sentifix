@@ -9,8 +9,8 @@ import time
 import random
 import requests
 from bs4 import BeautifulSoup
-from files import (AUTHOR, AUTHOR_LINK, CATEGORY, DATE, TIME, TITLE, CONTENT, COMMENTS,
-                   get_links, save_links, get_news, save_news)
+from files import (AUTHOR, AUTHOR_LINK, CATEGORY, DATE, TIME, TITLE, CONTENT,
+                   COMMENTS, get_links, save_links, get_news, save_news)
 
 # URLs
 URL_BASE = 'https://br.investing.com'
@@ -121,7 +121,7 @@ def update_news(link_list):
 
 def update():
     '''
-    Main function
+    Main update function
     '''
     print('BrInvesting IFIX News')
     link_list = update_links()
