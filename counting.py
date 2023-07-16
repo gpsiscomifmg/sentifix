@@ -9,8 +9,8 @@ import nltk
 import pandas as pd
 import matplotlib.pyplot as plt
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
 from string import punctuation
+from nltk.tokenize import word_tokenize
 from wordcloud import WordCloud
 from files import DATE, TITLE, CONTENT, COMMENTS, get_news
 
@@ -47,6 +47,7 @@ def news_count(news):
     month_count = {}
     # Count news
     for new in news.values():
+        # Month format: YYYY-MM
         month = new[DATE].split('.')[2] + '-' + new[DATE].split('.')[1]
         if month not in month_count:
             month_count[month] = 0
@@ -71,7 +72,8 @@ def main():
     # Remove stop words and punctuation
     stops = stopwords.words('portuguese')
     stops.extend(list(punctuation))
-    words = list(filter(lambda word: word not in stops, words))
+    words = [word for word in words
+             if word not in stops]
     word_cloud(words, stops)
     freq_graph(words)
     news_count(news)
