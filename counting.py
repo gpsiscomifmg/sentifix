@@ -2,16 +2,17 @@
 # -*- coding: utf-8 -*-
 
 '''
-News word count
+News and words counting
 '''
 
 import nltk
+import pandas as pd
 import matplotlib.pyplot as plt
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from string import punctuation
 from wordcloud import WordCloud
-from files import TITLE, CONTENT, COMMENTS, get_news
+from files import DATE, TITLE, CONTENT, COMMENTS, get_news
 
 try:
     nltk.data.find('tokenizers/punkt')
@@ -41,6 +42,22 @@ def freq_graph(words):
     freq = nltk.FreqDist(words)
     freq.plot(50)
 
+def news_count(news):
+    '''Count news by month'''
+    month_count = {}
+    # Count news
+    for new in news.values():
+        month = new[DATE].split('.')[2] + '-' + new[DATE].split('.')[1]
+        if month not in month_count:
+            month_count[month] = 0
+        month_count[month] += 1
+    # Sort by mount
+    month_count = sorted(month_count.items(), key=lambda x: x[0])
+    # Print results
+    data = pd.DataFrame(month_count, columns=['Mês', 'Notícias'])
+    data.plot(x='Mês', y='Notícias', kind='bar', figsize=(15, 10))
+    plt.show()
+
 def main():
     '''
     Main function
@@ -51,12 +68,13 @@ def main():
         text += new[TITLE] + '\n' + new[CONTENT] + '\n' + new[COMMENTS]
     # Tokenize words
     words = word_tokenize(text.lower())
-    # Remove stopwords and punctuation
+    # Remove stop words and punctuation
     stops = stopwords.words('portuguese')
     stops.extend(list(punctuation))
     words = list(filter(lambda word: word not in stops, words))
     word_cloud(words, stops)
     freq_graph(words)
+    news_count(news)
 
 if __name__ == '__main__':
     main()
