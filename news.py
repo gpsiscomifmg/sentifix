@@ -10,7 +10,7 @@ import random
 import requests
 from bs4 import BeautifulSoup
 from files import (AUTHOR, AUTHOR_LINK, CATEGORY, DATE, TIME, TITLE, CONTENT,
-                   COMMENTS, get_links, save_links, get_news, save_news)
+                   COMMENTS, load_links, save_links, load_news, save_news)
 
 # URLs
 URL_BASE = 'https://br.investing.com'
@@ -51,7 +51,7 @@ def update_links():
     '''
     Update new links
     '''
-    link_list = get_links()
+    link_list = load_links()
     print('Getting links...')
     # Start page
     page_number = 1
@@ -108,7 +108,7 @@ def update_news(link_list):
     '''
     Update news from link list
     '''
-    news = get_news()
+    news = load_news()
     # For each link
     for link in link_list:
         link = link.strip()

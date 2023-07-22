@@ -9,7 +9,7 @@ import requests
 import pandas as pd
 from base64 import b64encode
 from datetime import datetime
-from files import (DATE, IFIX, IFIX_FILE, get_ifix, to_float)
+from files import (DATE, IFIX, IFIX_FILE, load_ifix, to_float)
 
 FIRST_IFIX_YEAR = 2010
 URL_BASE = 'https://sistemaswebb3-listados.b3.com.br/indexStatisticsProxy/IndexCall/GetPortfolioDay/'
@@ -43,7 +43,7 @@ def update():
     Update IFIX data
     '''
     # Get current IFIX data
-    ifix_data = get_ifix()
+    ifix_data = load_ifix()
     if ifix_data is None:
         start_year = FIRST_IFIX_YEAR
         ifix_data = pd.DataFrame()
@@ -65,7 +65,6 @@ def update():
     ifix_data.sort_index(inplace=True)
     ifix_data = ifix_data.resample('D').mean()
     ifix_data.fillna(method='ffill', inplace=True)
-    # ifix_data.interpolate(method='time', inplace=True)
     ifix_data.to_csv(IFIX_FILE)
 
 if __name__ == '__main__':

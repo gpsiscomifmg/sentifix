@@ -10,7 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from nltk.tokenize import word_tokenize
 from wordcloud import WordCloud
-from files import DATE, TITLE, CONTENT, COMMENTS, get_news, get_stops
+from files import DATE, TITLE, CONTENT, COMMENTS, load_news, load_stops
 
 def word_cloud(words, stops):
     '''
@@ -54,14 +54,14 @@ def main():
     '''
     Main function
     '''
-    news = get_news()
+    news = load_news()
     text = ''
     for new in news.values():
         text += new[TITLE] + '\n' + new[CONTENT] + '\n' + new[COMMENTS]
     # Tokenize words
     words = word_tokenize(text.lower())
     # Remove stop words and punctuation
-    stops = get_stops()
+    stops = load_stops()
     words = [word for word in words
              if word not in stops]
     word_cloud(words, stops)

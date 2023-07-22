@@ -27,66 +27,88 @@ IFIX_FILE = 'data/ifix.csv'
 SENTIMENT_FILE = 'data/sentiment.csv'
 STOPS_FILE = 'data/stops.txt'
 
-def get_stops():
-    '''
-    Get stop words from file
-    '''
-    stop_list = []
+def _load_from(file_name):
+    '''Load list from TXT file'''
+    item_list = []
     # Check if link file exists
-    if os.path.isfile(STOPS_FILE):
-        # Load existing links
-        with open(STOPS_FILE, 'r', encoding='utf-8') as file:
-            stop_list = file.read().split('\n')[:-1]
-    # Save links to file
-    return stop_list
+    if os.path.isfile(file_name):
+        # Load file content
+        with open(file_name, 'r', encoding='utf-8') as file:
+            item_list = file.read().split('\n')[:-1]
+    return item_list
 
-def get_links():
+def _save_to(item_list, file_name):
     '''
-    Get links from file
+    Save list to TXT file
     '''
-    link_list = []
-    # Check if link file exists
-    if os.path.isfile(LINKS_FILE):
-        # Load existing links
-        with open(LINKS_FILE, 'r', encoding='utf-8') as file:
-            link_list = file.read().split('\n')[:-1]
-    # Save links to file
-    return link_list
+    with open(file_name, 'w', encoding='utf-8') as file:
+        for item in item_list:
+            file.write(item + '\n')
+
+def _load_from_json(file_name):
+    '''
+    Load from JSON file
+    '''
+    content = None
+    if os.path.isfile(file_name):
+        with open(file_name, 'r', encoding='utf-8') as file:
+            content = json.load(file)
+    return content
+
+def _save_to_json(content, file_name):
+    '''
+    Save to JSON file
+    '''
+    with open(file_name, 'w', encoding='utf-8') as file:
+        json.dump(content, file, indent=2, ensure_ascii=False)
+
+def load_links():
+    '''
+    Load links from file
+    '''
+    return _load_from(LINKS_FILE)
 
 def save_links(link_list):
     '''
     Save links to file
     '''
-    with open(LINKS_FILE, 'w', encoding='utf-8') as file:
-        for link in link_list:
-            file.write(link + '\n')
+    _save_to(link_list, LINKS_FILE)
 
-def get_news():
+def load_stops():
     '''
-    Get news from file
+    Load stop words from file
     '''
-    news = {}
-    # Open news file
-    if os.path.isfile(NEWS_FILE):
-        with open(NEWS_FILE, 'r', encoding='utf-8') as file:
-            news = json.load(file)
-    return news
+    return _load_from(STOPS_FILE)
+
+def load_news():
+    '''
+    Load news from file
+    '''
+    return _load_from_json(NEWS_FILE)
 
 def save_news(news):
     '''
     Save news to file
     '''
-    with open(NEWS_FILE, 'w', encoding='utf-8') as file:
-        json.dump(news, file, indent=2, ensure_ascii=False)
+    _save_to_json(news, NEWS_FILE)
 
-def get_ifix():
+def _load_pandas_csv(file_name, index_col=None):
     '''
-    Get IFIX history from file
+    Load CSV file using Pandas
     '''
     data = None
-    if os.path.isfile(IFIX_FILE):
-        data = pd.read_csv('ifix.csv', index_col=DATE, parse_dates=True)
+    if os.path.isfile(file_name):
+        if index_col:
+            data = pd.read_csv(file_name, index_col=index_col, parse_dates=True)
+        else:
+            data = pd.read_csv(file_name, parse_dates=True)
     return data
+
+def load_ifix():
+    '''
+    Load IFIX history from file
+    '''
+    return _load_pandas_csv(IFIX_FILE, index_col=DATE)
 
 def to_float(text):
     '''

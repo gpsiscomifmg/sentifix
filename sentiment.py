@@ -7,7 +7,7 @@ News sentiment using leia (VADER)
 
 import pandas as pd
 from leia import SentimentIntensityAnalyzer
-from files import DATE, TITLE, CONTENT, COMMENTS, SENTIMENT_FILE, get_news
+from files import DATE, TITLE, CONTENT, COMMENTS, SENTIMENT_FILE, load_news
 
 ANALYZER = SentimentIntensityAnalyzer()
 
@@ -33,7 +33,7 @@ def update():
     '''
     Main update function
     '''
-    news_dict = get_news()
+    news_dict = load_news()
     sent_list = []
     # Compute sentiment for each new
     for new in news_dict.values():
