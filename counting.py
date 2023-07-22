@@ -8,18 +8,9 @@ News and words counting
 import nltk
 import pandas as pd
 import matplotlib.pyplot as plt
-from nltk.corpus import stopwords
-from string import punctuation
 from nltk.tokenize import word_tokenize
 from wordcloud import WordCloud
-from files import DATE, TITLE, CONTENT, COMMENTS, get_news
-
-try:
-    nltk.data.find('tokenizers/punkt')
-    nltk.data.find('corpora/stopwords')
-except LookupError:
-    nltk.download('punkt')
-    nltk.download('stopwords')
+from files import DATE, TITLE, CONTENT, COMMENTS, get_news, get_stops
 
 def word_cloud(words, stops):
     '''
@@ -70,8 +61,7 @@ def main():
     # Tokenize words
     words = word_tokenize(text.lower())
     # Remove stop words and punctuation
-    stops = stopwords.words('portuguese')
-    stops.extend(list(punctuation))
+    stops = get_stops()
     words = [word for word in words
              if word not in stops]
     word_cloud(words, stops)

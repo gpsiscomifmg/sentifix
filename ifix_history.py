@@ -64,6 +64,8 @@ def update():
     ifix_data = ifix_data.append(new_data)
     ifix_data.sort_index(inplace=True)
     ifix_data = ifix_data.resample('D').mean()
+    ifix_data.fillna(method='ffill', inplace=True)
+    # ifix_data.interpolate(method='time', inplace=True)
     ifix_data.to_csv(IFIX_FILE)
 
 if __name__ == '__main__':

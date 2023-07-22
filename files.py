@@ -21,10 +21,24 @@ COMMENTS = 'comments'
 IFIX = 'ifix'
 
 # Files
-LINKS_FILE = 'links.txt'
-NEWS_FILE = 'news.json'
-IFIX_FILE = 'ifix.csv'
-SENTIMENT_FILE = 'sentiment.csv'
+LINKS_FILE = 'data/links.txt'
+NEWS_FILE = 'data/news.json'
+IFIX_FILE = 'data/ifix.csv'
+SENTIMENT_FILE = 'data/sentiment.csv'
+STOPS_FILE = 'data/stops.txt'
+
+def get_stops():
+    '''
+    Get stop words from file
+    '''
+    stop_list = []
+    # Check if link file exists
+    if os.path.isfile(STOPS_FILE):
+        # Load existing links
+        with open(STOPS_FILE, 'r', encoding='utf-8') as file:
+            stop_list = file.read().split('\n')[:-1]
+    # Save links to file
+    return stop_list
 
 def get_links():
     '''
